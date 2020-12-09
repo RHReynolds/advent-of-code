@@ -6,13 +6,18 @@ library(qdapTools)
 
 #---Load data--------------------------------------------------
 
-map <- read_delim(here::here("2020", "raw_data", "day_3.txt"),
-                        delim = " ",
-                        col_names = "map")
+map <-
+  readr::read_delim(here::here("2020", "raw_data", "day_3.txt"),
+                    delim = " ",
+                    col_names = "map")
 
 #---Main-------------------------------------------------------
 
 #---Part 1---
+
+# Inputs
+start <- 1
+n_right <- 3
 
 # Start by determining number of times string has to be repeated
 # to expand map to encompass number of rows
@@ -24,14 +29,10 @@ expanded_map <-
   dplyr::mutate(expanded_map = str_dup(map, n_rep)) %>%
   dplyr::select(map = expanded_map)
 
-# Inputs
-start <- 1
-n_right <- 3
-
 # Create empty list for loop output
 map_list <- vector(mode = "list", length = nrow(expanded_map))
 
-# Loop across rows and extract entry at relevant position
+# Loop across rows and extract entry at relevant position on map
 for(i in 1:nrow(expanded_map)){
 
   pos_to_extract <- start + (n_right * (i-1))
@@ -59,11 +60,8 @@ print(str_c("Number of trees encountered: ", n_trees_p1))
 # Let's wrap the above into a function!
 counting_trees <- function(map, start, n_right, n_down){
 
-  # Start by determining number of times string has to be repeated
-  # to expand map to encompass number of rows
   n_rep <- ceiling(nrow(map)/str_count(map$map[1]) * n_right)
 
-  # Expand map
   expanded_map <-
     map %>%
     dplyr::mutate(expanded_map = str_dup(map, n_rep)) %>%
@@ -73,21 +71,18 @@ counting_trees <- function(map, start, n_right, n_down){
   expanded_map <-
     expanded_map[seq(nrow(expanded_map), from = start, by = n_down), ]
 
-  # Create empty list
   map_list <- vector(mode = "list", length = nrow(expanded_map))
 
-  # Loop across rows and extract entry at relevant position
   for(i in 1:nrow(expanded_map)){
 
-      pos_to_extract <- start + (n_right * (i-1))
+    pos_to_extract <- start + (n_right * (i-1))
 
-      map_list[[i]] <-
-        expanded_map[i,] %>%
-        dplyr::mutate(map_entry = str_sub(map, pos_to_extract, pos_to_extract))
+    map_list[[i]] <-
+      expanded_map[i,] %>%
+      dplyr::mutate(map_entry = str_sub(map, pos_to_extract, pos_to_extract))
 
   }
 
-  # Sum number of trees encountered
   n_trees <-
     map_list %>%
     qdapTools::list_df2df(col1 = "X1") %>%
@@ -113,9 +108,9 @@ for(i in 1:nrow(combinations)){
 
   n_trees_p2[i] <-
     counting_trees(map = map,
-                 start = 1,
-                 n_right = combinations$n_right[i],
-                 n_down = combinations$n_down[i])
+                   start = 1,
+                   n_right = combinations$n_right[i],
+                   n_down = combinations$n_down[i])
 
 }
 

@@ -3,8 +3,9 @@ library(tidyverse)
 
 #---Load data--------------------------------------------------
 
-input <- read_delim(here::here("2020", "raw_data", "day_1.txt"),
-                      delim = "\t",
+input <-
+  readr::read_delim(here::here("2020", "raw_data", "day_1.txt"),
+                    delim = "\t",
                     col_names = "entry")
 
 #---Main-------------------------------------------------------
@@ -12,12 +13,14 @@ input <- read_delim(here::here("2020", "raw_data", "day_1.txt"),
 #---Part 1---
 
 # Determine difference
-input_diff <- input %>%
+input_diff <-
+  input %>%
   dplyr::mutate(diff = 2020 - entry)
 
 # Find entries that match diff
 # Summarise by multiplying
-product_p1 <- input %>%
+product_p1 <-
+  input %>%
   dplyr::filter(entry %in% input_diff$diff) %>%
   dplyr::summarise(prod = prod(entry)) %>%
   .[["prod"]]
@@ -35,7 +38,8 @@ combinations <-
   dplyr::rename(entry = V1, entry_dup = V2) %>%
   dplyr::mutate(diff = 2020 - entry - entry_dup)
 
-product_p2 <- input %>%
+product_p2 <-
+  input %>%
   dplyr::filter(entry %in% combinations$diff) %>%
   dplyr::summarise(prod = prod(entry)) %>%
   .[["prod"]]
