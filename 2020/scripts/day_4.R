@@ -12,33 +12,17 @@ passports <-
 
 #---Part 1---
 
-# Passports are separated by empty row - change to NA
-# Use NA to group and merge passports split over several rows
+# Passports are separated by empty row
+# Use empty row to mark start of new group with 1
+# Use cumulative sum + 1 to shift groups
 passport_df <-
   tibble(passports = passports,
-         group = integer(length = length(passports))) %>%
-  dplyr::mutate_if(is.character, list(~na_if(.,"")))
-
-group <-  as.integer(1)
-
-for(i in 1:nrow(passport_df)){
-
-  passport_df$group[i] <- group
-
-  if(is.na(passport_df$passports[i])){
-
-    group <- group + 1
-
-  }
-
-}
-
-passport_df <-
-  passport_df %>%
-  dplyr::filter(!is.na(passports)) %>%
+         group = case_when(passports == "" ~ 1,
+                           TRUE ~ 0)) %>%
+  dplyr::mutate(group = cumsum(group) + 1) %>%
+  dplyr::filter(passports != "") %>%
   dplyr::group_by(group) %>%
   dplyr::summarise(passports = str_c(passports, collapse = " "))
-
 
 # Passport is valid either by having all of the following
 # Do not cid for now
