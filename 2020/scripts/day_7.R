@@ -1,5 +1,4 @@
 #---Load libraries---------------------------------------------
-library(purrr)
 library(tidyverse)
 library(stringr)
 
